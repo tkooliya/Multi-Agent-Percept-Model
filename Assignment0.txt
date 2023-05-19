@@ -1,0 +1,14 @@
+Welcome to Assignment 0. This is not graded and you are not supposed to hand in anything.
+1- Install Anaconda or PyCharm on your laptop and make sure you choose adding python path to your user path on your laptop. This way you will be able to run python script straight from command line. I will quickly review this in next class.
+ 
+2.- Here's a link to a rather comprehensive tutorial on Python 3.9 from the source: https://docs.python.org/3.9/tutorial/
+	I suggest review as much of it as you can. Try the code strips provided throught the sections of the tutorial. 
+	
+3- There are also 7 python scripts, each one contains some sample codes, starting from HelloWorld to QuickSort. You should be able to run all of them using command >python scriptname.
+I have extracted a summary of the Berkley Univ tutorial on Python for use in this course and attached it here. This summary tutorial walks you through the various features of Python that are important to us, using the above scripts as examples along the way. Follow this tutorial if Python is new to you or need a refresher.
+
+For reading part, review carefully the first 2 chapters of the book (Artificial Intelligene: A modern Approach, 3th or 4'th edition).
+
+I'll review some of the important and directly relevant python's features next class, as well as answering your questions you may have as a result of following the above instructions. So, remember to bring with you your laptop.
+
+Cheers.
