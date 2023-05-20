@@ -12,8 +12,8 @@ class Gui(VacuumEnvironment):
     xi, yi = (0, 0)
     perceptible_distance = 1
 
-    def __init__(self, root, width=7, height=7, elements=None):
-        print("creating xv with width =", width)
+    def __init__(self, root, width = int(sys.argv[1]), height = int(sys.argv[2]), elements=None):
+        print("creating xv with width =", width, "and height =", height)
         super().__init__(width, height)
         if elements is None:
             elements = ['D', 'W'] # D is Dirt and W is Wall
@@ -26,7 +26,7 @@ class Gui(VacuumEnvironment):
     def create_frames(self):
         """Adds frames to the GUI environment."""
         self.frames = []
-        for _ in range(7):
+        for _ in range(self.height):
             frame = Frame(self.root, bg='red')
             frame.pack(side='bottom')
             self.frames.append(frame)
@@ -36,7 +36,7 @@ class Gui(VacuumEnvironment):
         self.buttons = []
         for frame in self.frames:
             button_row = []
-            for _ in range(7):
+            for _ in range(self.width):
                 button = Button(frame, height=3, width=5, padx=2, pady=2)
                 button.config(command=lambda btn=button: self.display_element(btn))
                 button.pack(side='left')
@@ -179,7 +179,7 @@ class XYReflexAgent(Agent):
 if __name__ == "__main__":
     win = Tk()
     win.title("Vacuum Robot Environment")
-    win.geometry("420x440")
+    win.geometry("800x840")
     win.resizable(False, False)
     frame = Frame(win, bg='black')
 
