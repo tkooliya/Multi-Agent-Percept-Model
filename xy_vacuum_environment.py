@@ -165,7 +165,7 @@ class Gui(VacuumEnvironment):
 
         self.reset_env()
 
-
+#TODO: NEED TO FIX THE FUCKING RESET BUTTON
     def reset_env(self):
         """Resets the GUI environment to the initial clear state."""
         for j, btn_row in enumerate(self.buttons):
@@ -177,14 +177,18 @@ class Gui(VacuumEnvironment):
                                 self.delete_thing(thing)
                     btn.config(bg='white', text='', state='normal')
 
+        for agent in self.agents[:]:
+            self.delete_thing(agent)
 
         theAgent = XYReflexAgent(program=XYReflexAgentProgram)
-        if env.agentType == 'Rule':
+        print(env.agentType)
+        if env.agentType == 'RuleAgent':
             theAgent = RuleBasedAgent(program=XYRuleBasedAgentProgram)
 
         # add an agent at location 2, 1.
+
         self.add_thing(theAgent, location=(2, 1))
-        self.buttons[1][2].config(text=agent_label(theAgent))
+        self.buttons[1][2].config(bg = 'blue', text=agent_label(theAgent))
 
     def second_agent(self):
         """Implement this: Click call back for second Agent. It rotates among possible options"""
@@ -194,6 +198,9 @@ class Gui(VacuumEnvironment):
 # location found, agent goes to that location, otherwise follow similar rules as the XYReflexAgentProgram bellow.
 def XYRuleBasedAgentProgram(percept):
     status, bump = percept
+    print("it is executing the rule based behaviour")
+
+
     if status == 'Dirty':
         return 'Suck'
 
@@ -223,6 +230,7 @@ class RuleBasedAgent(Agent):
 def XYReflexAgentProgram(percept):
     """The modified SimpleReflexAgentProgram for the GUI environment."""
     status, bump = percept
+    print("it is executing the reflex based behaviour")
     if status == 'Dirty':
         return 'Suck'
 
