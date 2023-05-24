@@ -458,9 +458,9 @@ class Direction:
         elif self.direction == self.L:
             return iclass((x - 1, y))
         elif self.direction == self.U:
-            return iclass((x, y - 1))
-        elif self.direction == self.D:
             return iclass((x, y + 1))
+        elif self.direction == self.D:
+            return iclass((x, y - 1))
 
 
 class XYEnvironment(Environment):
