@@ -198,14 +198,17 @@ class Gui(VacuumEnvironment):
 # location found, agent goes to that location, otherwise follow similar rules as the XYReflexAgentProgram bellow.
 def XYRuleBasedAgentProgram(percept):
     status, bump = percept
-    print("it is executing the rule based behaviour")
-
+    # print("it is executing the rule based behaviour")
 
     if status == 'Dirty':
         return 'Suck'
 
     if bump == 'Bump':
         value = random.choice((1, 2))
+
+    elif bump == 'Dirty':
+        value = 3
+
     else:
         value = random.choice((1, 2, 3, 4))  # 1-right, 2-left, others-forward
 
@@ -224,13 +227,13 @@ class RuleBasedAgent(Agent):
         super().__init__(program)
         self.location = (1, 2)
         self.direction = Direction("up")
-        self.type = env.agentTypes[0]
+        self.type = env.agentTypes[1]
     pass
 
 def XYReflexAgentProgram(percept):
     """The modified SimpleReflexAgentProgram for the GUI environment."""
     status, bump = percept
-    print("it is executing the reflex based behaviour")
+    # print("it is executing the reflex based behaviour")
     if status == 'Dirty':
         return 'Suck'
 
