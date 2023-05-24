@@ -67,9 +67,9 @@ class Thing:
 
 
 class Agent(Thing):
-    """An Agent is a subclass of Thing with one required instance attribute 
+    """An Agent is a subclass of Thing with one required instance attribute
     (aka slot), .program, which should hold a function that takes one argument,
-    the percept, and returns an action. (What counts as a percept or action 
+    the percept, and returns an action. (What counts as a percept or action
     will depend on the specific environment in which the agent exists.)
     Note that 'program' is a slot, not a method. If it were a method, then the
     program could 'cheat' and look at aspects of the agent. It's not supposed
@@ -508,7 +508,7 @@ class XYEnvironment(Environment):
             agent.bump = self.move_to(agent, agent.direction.move_forward(agent.location))
         elif action == 'Grab':
             things = [thing for thing in self.list_things_at(agent.location) if agent.can_grab(thing)]
-            if things:    
+            if things:
                 agent.holding.append(things[0])
                 print("Grabbing ", things[0].__class__.__name__)
                 self.delete_thing(things[0])
@@ -736,6 +736,7 @@ class VacuumEnvironment(XYEnvironment):
 
     def __init__(self, width=10, height=10):
         super().__init__(width, height)
+
         self.add_walls()
 
     def thing_classes(self):
@@ -959,7 +960,7 @@ class WumpusEnvironment(XYEnvironment):
 
         if isinstance(agent, Explorer) and self.in_danger(agent):
             return
-            
+
         agent.bump = False
         if action in ['TurnRight', 'TurnLeft', 'Forward', 'Grab']:
             super().execute_action(agent, action)
