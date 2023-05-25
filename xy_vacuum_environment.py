@@ -95,6 +95,17 @@ class Gui(VacuumEnvironment):
             elif bgcolor == 'white':
                 button.config(bg='red', text='W')
 
+
+    # need to have this shit run until its not dirty anymore
+    def runAgent(self, steps=1000 - 1):
+        """Run the Environment for given number of time steps."""
+        self.update_env()
+        for step in range(steps):
+            self.update_env()
+            if self.is_done():
+                return
+
+
     def execute_action(self, agent, action):
         """Determines the action the agent performs."""
         xi, yi = (self.xi, self.yi)
@@ -186,11 +197,19 @@ class Gui(VacuumEnvironment):
 
         # add an agent at location 2, 1.
 
-        self.add_thing(theAgent, location=(2, 1))
-        self.buttons[1][2].config(bg = 'blue', text=agent_label(theAgent))
+        Xstart_agent1 = random.choice(range(1, wid - 1))
+        Ystart_agent1 = random.choice(range(1, hig - 1))
 
-    def second_agent(self):
+        self.add_thing(theAgent, location=(Xstart_agent1, Ystart_agent1))
+        self.buttons[Ystart_agent1][Xstart_agent1].config(bg = 'blue', text=agent_label(theAgent))
+
+    def second_agent(self, agt2, xyloc):
         """Implement this: Click call back for second Agent. It rotates among possible options"""
+        self.reset_env()
+        self.add_thing(agt2, xyloc)
+        # Place the agent in the centre of the grid.
+        lbl = agent_label(agt)
+        self.buttons[xyloc[1]][xyloc[0]].config(bg='Green', text=lbl)
         pass
 
 #implement this. Rule is as follows: At each location, agent checks all the neighboring location: If a "Dirty"
@@ -350,7 +369,22 @@ if __name__ == "__main__":
     env = Gui(win, wid, hig)
 
     agt = XYReflexAgent(program=XYReflexAgentProgram)
-    env.add_agent(agt, (2, 1))
+    agt2 = XYReflexAgent(program=XYReflexAgentProgram)
+
+    Xstart_agent1 = random.choice(range(1, wid - 1))
+    Ystart_agent1 = random.choice(range(1, hig - 1))
+    Xstart_agent2 = Xstart_agent1
+    Ystart_agent2 = Ystart_agent1
+
+    print(str(Xstart_agent1) + " " + str(Ystart_agent1))
+    while Xstart_agent2 == Xstart_agent1 and Ystart_agent2 == Ystart_agent1:
+        Xstart_agent2 = random.choice(range(1, wid - 1))
+        Ystart_agent2 = random.choice(range(1, hig - 1))
+    print(str(Xstart_agent2) + " " + str(Ystart_agent2))
+
+    env.add_agent(agt, (Xstart_agent1, Ystart_agent1))
+
+    xyloc = Xstart_agent2, Ystart_agent2
 
     agentType_button = Button(frame, text=env.agentTypes[0], height=2, width=8, padx=2, pady=2)
     agentType_button.pack(side='left')
@@ -368,7 +402,7 @@ if __name__ == "__main__":
     next_button.config(command=env.update_env)
     agentType_button.config(command=env.toggle_agentType)
     reset_button.config(command=env.reset_env)
-    run_button.config(command=env.run)
+    run_button.config(command=env.runAgent)
     secondAgent_button.config(command=env.second_agent)
 
 
