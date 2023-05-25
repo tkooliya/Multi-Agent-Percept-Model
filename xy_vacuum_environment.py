@@ -108,7 +108,7 @@ class Gui(VacuumEnvironment):
 
     def execute_action(self, agent, action):
         """Determines the action the agent performs."""
-        xi, yi = (self.xi, self.yi)
+        xi, yi = agent.location
         print("agent at location (", xi, yi, ") and action ", action)
 
         if action == 'Suck':
@@ -157,9 +157,9 @@ class Gui(VacuumEnvironment):
     def update_env(self):
         """Updates the GUI environment according to the current state."""
         self.read_env()
-        agt = self.agents[0]
-        previous_agent_location = agt.location
-        self.xi, self.yi = previous_agent_location
+        for i, agt in enumerate(self.agents):
+            previous_agent_location = agt.location
+            self.xi, self.yi = previous_agent_location
         self.step()
 
 
@@ -172,6 +172,7 @@ class Gui(VacuumEnvironment):
 
         print(", new agentType = ", env.agentType)
         agentType_button.config(text=env.agentType)
+        secondAgent_button.config(text=env.agentTypes[2])
 
         self.reset_env()
 
@@ -203,14 +204,33 @@ class Gui(VacuumEnvironment):
         self.add_thing(theAgent, location=(Xstart_agent1, Ystart_agent1))
         self.buttons[Ystart_agent1][Xstart_agent1].config(bg = 'blue', text=agent_label(theAgent))
 
-    def second_agent(self, agt2, xyloc):
+    def second_agent(self):
         """Implement this: Click call back for second Agent. It rotates among possible options"""
-        self.reset_env()
-        self.add_thing(agt2, xyloc)
-        # Place the agent in the centre of the grid.
-        lbl = agent_label(agt)
-        self.buttons[xyloc[1]][xyloc[0]].config(bg='Green', text=lbl)
-        pass
+        if(len(self.agents) == 1):
+            self.reset_env()
+            if env.agentType == 'RuleAgent':
+                agt2 = XYReflexAgent(program=XYRuleBasedAgentProgram)
+                print("agent 2 is rule based")
+                secondAgent_button.config(text=("2 agents - " + env.agentTypes[1]))
+            elif env.agentType == 'ReflexAgent':
+                agt2 = XYReflexAgent(program=XYReflexAgentProgram)
+                print("agent 2 is reflex based")
+                secondAgent_button.config(text=("2 agents - " + env.agentTypes[0]))
+            else:
+                agt2 = XYReflexAgent(program=XYReflexAgentProgram)
+                secondAgent_button.config(text=("2 agents - " + env.agentTypes[0]))
+
+            env.add_agent(agt2, xyloc)
+            # Place the agent in the centre of the grid.
+            lbl = agent_label(agt)
+            self.buttons[xyloc[1]][xyloc[0]].config(bg='Green', text=lbl)
+            agentType_button.config(text=env.agentType)
+            pass
+        else:
+            self.delete_thing(self.agents[1])
+            self.reset_env()
+            secondAgent_button.config(text=env.agentTypes[2])
+
 
 #implement this. Rule is as follows: At each location, agent checks all the neighboring location: If a "Dirty"
 # location found, agent goes to that location, otherwise follow similar rules as the XYReflexAgentProgram bellow.
@@ -369,13 +389,13 @@ if __name__ == "__main__":
     env = Gui(win, wid, hig)
 
     agt = XYReflexAgent(program=XYReflexAgentProgram)
-    agt2 = XYReflexAgent(program=XYReflexAgentProgram)
 
     Xstart_agent1 = random.choice(range(1, wid - 1))
     Ystart_agent1 = random.choice(range(1, hig - 1))
     Xstart_agent2 = Xstart_agent1
     Ystart_agent2 = Ystart_agent1
 
+    # Avoids generating the same coordinates to spawn agent 2
     print(str(Xstart_agent1) + " " + str(Ystart_agent1))
     while Xstart_agent2 == Xstart_agent1 and Ystart_agent2 == Ystart_agent1:
         Xstart_agent2 = random.choice(range(1, wid - 1))
@@ -388,7 +408,7 @@ if __name__ == "__main__":
 
     agentType_button = Button(frame, text=env.agentTypes[0], height=2, width=8, padx=2, pady=2)
     agentType_button.pack(side='left')
-    secondAgent_button = Button(frame, text=env.agentTypes[2], height=2, width=8, padx=2, pady=2)
+    secondAgent_button = Button(frame, text=env.agentTypes[2], height=2, width=16, padx=2, pady=2)
     secondAgent_button.pack(side='left')
     performance_label = Label(win, text='0', height=1, width = 3, padx=2, pady=2)
     performance_label.pack(side='top')
