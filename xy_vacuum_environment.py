@@ -99,6 +99,7 @@ class Gui(VacuumEnvironment):
         """Determines the action the agent performs."""
         xi, yi = (self.xi, self.yi)
         print("agent at location (", xi, yi, ") and action ", action)
+
         if action == 'Suck':
             dirt_list = self.list_things_at(agent.location, Dirt)
             if dirt_list:
@@ -124,9 +125,7 @@ class Gui(VacuumEnvironment):
 
         if action != 'NoOp':
             agent.performance -= 1
-
         performance_label.config(text=str(agent.performance))
-
     def read_env(self):
         """read_env: This sets proper wall or Dirt status based on bg color"""
         agt_loc = self.agents[0].location
@@ -197,8 +196,10 @@ class Gui(VacuumEnvironment):
 #implement this. Rule is as follows: At each location, agent checks all the neighboring location: If a "Dirty"
 # location found, agent goes to that location, otherwise follow similar rules as the XYReflexAgentProgram bellow.
 def XYRuleBasedAgentProgram(percept):
-    status, bump = percept
+    status, bump, dirty, directionFace = percept
     # print("it is executing the rule based behaviour")
+
+    print(directionFace)
 
     if status == 'Dirty':
         return 'Suck'
@@ -206,18 +207,95 @@ def XYRuleBasedAgentProgram(percept):
     if bump == 'Bump':
         value = random.choice((1, 2))
 
-    elif bump == 'Dirty':
-        value = 3
+    if directionFace == 'up':
+        print("UPPPIES")
+
+        if dirty[0] == 1:
+            return 'Forward'
+        elif dirty[1] == 1:
+            return 'TurnLeft'
+        elif dirty[2] == 1:
+            return 'TurnRight'
+        elif dirty[3] == 1:
+            return 'TurnRight' # Costs 2 rotations to pickup dirt spot behind so doesn't matter which direction
+        else:
+            value = random.choice((1, 2, 3, 4))  # 1-right, 2-left, others-forward
+            if value == 1:
+                return 'TurnRight'
+            elif value == 2:
+                return 'TurnLeft'
+            else:
+                return 'Forward'
+
+    elif directionFace == 'left':
+        print("LEFTIES")
+
+        if dirty[1] == 1:
+            return 'Forward'
+        elif dirty[3] == 1:
+            return 'TurnLeft'
+        elif dirty[0] == 1:
+            return 'TurnRight'
+        elif dirty[2] == 1:
+            return 'TurnRight' # Costs 2 rotations to pickup dirt spot behind
+        else:
+            value = random.choice((1, 2, 3, 4))  # 1-right, 2-left, others-forward
+            if value == 1:
+                return 'TurnRight'
+            elif value == 2:
+                return 'TurnLeft'
+            else:
+                return 'Forward'
+
+    elif directionFace == 'right':
+        print("RIGHTIES")
+
+        if dirty[2] == 1:
+            return 'Forward'
+        elif dirty[0] == 1:
+            return 'TurnLeft'
+        elif dirty[3] == 1:
+            return 'TurnRight'
+        elif dirty[1] == 1:
+            return 'TurnRight' # Costs 2 rotations to pickup dirt spot behind
+        else:
+            value = random.choice((1, 2, 3, 4))  # 1-right, 2-left, others-forward
+            if value == 1:
+                return 'TurnRight'
+            elif value == 2:
+                return 'TurnLeft'
+            else:
+                return 'Forward'
+
+    elif directionFace == 'down':
+        print("UPPPIES")
+
+        if dirty[3] == 1:
+            return 'Forward'
+        elif dirty[2] == 1:
+            return 'TurnLeft'
+        elif dirty[1] == 1:
+            return 'TurnRight'
+        elif dirty[0] == 1:
+            return 'TurnRight' # Costs 2 rotations to pickup dirt spot behind
+
+        else:
+            value = random.choice((1, 2, 3, 4))  # 1-right, 2-left, others-forward
+            if value == 1:
+                return 'TurnRight'
+            elif value == 2:
+                return 'TurnLeft'
+            else:
+                return 'Forward'
 
     else:
         value = random.choice((1, 2, 3, 4))  # 1-right, 2-left, others-forward
-
-    if value == 1:
-        return 'TurnRight'
-    elif value == 2:
-        return 'TurnLeft'
-    else:
-        return 'Forward'
+        if value == 1:
+            return 'TurnRight'
+        elif value == 2:
+            return 'TurnLeft'
+        else:
+            return 'Forward'
 
 
 #Implement this: This will be similar to the ReflectAgent bellow.
@@ -232,7 +310,7 @@ class RuleBasedAgent(Agent):
 
 def XYReflexAgentProgram(percept):
     """The modified SimpleReflexAgentProgram for the GUI environment."""
-    status, bump = percept
+    status, bump, dirt, direction = percept
     # print("it is executing the reflex based behaviour")
     if status == 'Dirty':
         return 'Suck'

@@ -496,6 +496,7 @@ class XYEnvironment(Environment):
 
     def percept(self, agent):
         """By default, agent perceives things within a default radius."""
+
         return self.things_near(agent.location)
 
     def execute_action(self, agent, action):
@@ -748,7 +749,17 @@ class VacuumEnvironment(XYEnvironment):
         Unlike the TrivialVacuumEnvironment, location is NOT perceived."""
         status = ('Dirty' if self.some_things_at(agent.location, Dirt) else 'Clean')
         bump = ('Bump' if agent.bump else 'None')
-        return status, bump
+        dirty = [0, 0, 0, 0]
+        x, y = agent.location
+        direction = agent.direction.direction
+
+        #UP
+        dirty[0] = self.some_things_at((x, y + 1), Dirt) #forward
+        dirty[1] = self.some_things_at((x - 1, y), Dirt) #left
+        dirty[2] = self.some_things_at((x + 1, y), Dirt) #right
+        dirty[3] = self.some_things_at((x, y - 1), Dirt) #backwards
+
+        return status, bump, dirty, direction
 
     def execute_action(self, agent, action):
         agent.bump = False
