@@ -109,17 +109,22 @@ class Gui(VacuumEnvironment):
     #need to make a helper function to determine if agent is in region
     def is_agent_in_region(self, agent):
         lim = len(self.agents)
-        agentOK = []
+        agentOK = [0, 0]
         if(self.agents[0]):
             #Agent 1 bounds
             x1, y1 = self.agents[0].location
             if(1 < x1 <= wid - 1) and (1 < x1 < int(hig/2)):
                 agentOK[0] = 1
-        if(self.agents[1]):
-            #Agent 2 bounds
-            x2, y2 = self.agents[1].location
-            if(1 < x2 <= wid - 1) and (int(hig/2) < x2 < hig - 1):
-                agentOK[1] = 1
+            else:
+                agentOK[0] = 0
+        if(lim == 2):
+            if(self.agents[1]):
+                #Agent 2 bounds
+                x2, y2 = self.agents[1].location
+                if(1 < x2 <= wid - 1) and (int(hig/2) < x2 < hig - 1):
+                    agentOK[1] = 1
+                else:
+                    agentOK[1] = 0
         return agentOK
 
 
@@ -128,6 +133,8 @@ class Gui(VacuumEnvironment):
         """Determines the action the agent performs."""
         xi, yi = agent.location
         print("agent at location (", xi, yi, ") and action ", action)
+
+        array = self.is_agent_in_region(agent)
 
         if action == 'Suck':
             dirt_list = self.list_things_at(agent.location, Dirt)
@@ -139,6 +146,7 @@ class Gui(VacuumEnvironment):
 
         else:
             agent.bump = False
+            restrict_location = agent.direction.move_forward(agent.location)
             if action == 'TurnRight':
                 agent.direction += Direction.R
                 self.buttons[yi][xi].config(text=agent_label(agent))
@@ -146,15 +154,43 @@ class Gui(VacuumEnvironment):
                 agent.direction += Direction.L
                 self.buttons[yi][xi].config(text=agent_label(agent))
             elif action == 'Forward':
+                if(self.agents.index(agent) == 1):
+                    agent2 = 0
+                else:
+                    agent2 = 1
 
-                agent.bump = self.move_to(agent, agent.direction.move_forward(agent.location))
+                # issue a bump to agent if it reaches boundary
+                if (self.agents.index(agent) == 0 and restrict_location[1] >= (int(hig/2) + 1)):
+                    agent.bump = True
+                if(self.agents.index(agent) == 1 and restrict_location[1] < (int(hig/2))):
+                    agent.bump = True
+                if(restrict_location == self.agents[agent2]):
+                    agent.bump = True
+                # If agents come into contact
+                if(restrict_location == self.agents[agent2].location):
+                    agent.bump = True
+                else:
+                    agent.bump = self.move_to(agent, restrict_location)
+
                 if not agent.bump:
-                    self.buttons[yi][xi].config(bg = 'white', text='')
-                    xf, yf = agent.location
-                    self.buttons[yf][xf].config(bg = 'blue', text=agent_label(agent))
+                    if(self.agents.index(agent) == 0):
+                        if(len(self.agents) == 1) or self.agents[0] == agent:
+                            self.buttons[yi][xi].config(bg = 'white', text='')
+                            xf, yf = agent.location
+                            self.buttons[yf][xf].config(bg = 'blue', text=agent_label(agent))
+                    elif(self.agents.index(agent) == 1):
+                        self.buttons[yi][xi].config(bg = 'white', text='')
+                        xf, yf = agent.location
+                        self.buttons[yf][xf].config(bg = 'Green', text=agent_label(agent))
+
+            else:
+                agent.direction += Direction.L
+                self.buttons[yi][xi].config(text=agent_label(agent))
+
 
         if action != 'NoOp':
             agent.performance -= 1
+
         performance_label.config(text=str(agent.performance))
 
     def read_env(self):
@@ -255,7 +291,7 @@ class Gui(VacuumEnvironment):
             lbl = agent_label(agt)
             self.buttons[xyloc[1]][xyloc[0]].config(bg='Green', text=lbl)
             agentType_button.config(text=env.agentType)
-            pass
+
         else:
             self.delete_thing(self.agents[1])
             self.reset_env()
@@ -267,7 +303,6 @@ class Gui(VacuumEnvironment):
 def XYRuleBasedAgentProgram(percept):
     status, bump, dirty, directionFace = percept
     # print("it is executing the rule based behaviour")
-
     print(directionFace)
 
     if status == 'Dirty':
@@ -276,9 +311,9 @@ def XYRuleBasedAgentProgram(percept):
     if bump == 'Bump':
         value = random.choice((1, 2))
 
+
     if directionFace == 'up':
         print("UPPPIES")
-
         if dirty[0] == 1:
             return 'Forward'
         elif dirty[1] == 1:
