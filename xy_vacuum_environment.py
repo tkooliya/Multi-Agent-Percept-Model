@@ -147,6 +147,7 @@ class Gui(VacuumEnvironment):
         else:
             agent.bump = False
             restrict_location = agent.direction.move_forward(agent.location)
+
             if action == 'TurnRight':
                 agent.direction += Direction.R
                 self.buttons[yi][xi].config(text=agent_label(agent))
@@ -154,21 +155,17 @@ class Gui(VacuumEnvironment):
                 agent.direction += Direction.L
                 self.buttons[yi][xi].config(text=agent_label(agent))
             elif action == 'Forward':
+
+                print(self.agents.index(agent))
                 if(self.agents.index(agent) == 1):
                     agent2 = 0
                 else:
                     agent2 = 1
 
                 # issue a bump to agent if it reaches boundary
-                if (self.agents.index(agent) == 0 and restrict_location[1] >= (int(hig/2) + 1)):
-                    agent.bump = True
-                if(self.agents.index(agent) == 1 and restrict_location[1] < (int(hig/2))):
-                    agent.bump = True
-                if(restrict_location == self.agents[agent2]):
+                if (self.agents.index(agent) == 0 and restrict_location[1] >= (int(hig/2) + 1)) or (self.agents.index(agent) == 1 and restrict_location[1] < (int(hig/2))) or (restrict_location == self.agents[agent2].location):
                     agent.bump = True
                 # If agents come into contact
-                if(restrict_location == self.agents[agent2].location):
-                    agent.bump = True
                 else:
                     agent.bump = self.move_to(agent, restrict_location)
 
