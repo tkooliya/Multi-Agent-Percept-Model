@@ -155,19 +155,25 @@ class Gui(VacuumEnvironment):
                 agent.direction += Direction.L
                 self.buttons[yi][xi].config(text=agent_label(agent))
             elif action == 'Forward':
+                if(len(self.agents) > 1):
 
-                print(self.agents.index(agent))
-                if(self.agents.index(agent) == 1):
-                    agent2 = 0
-                else:
-                    agent2 = 1
+                    if(self.agents.index(agent) == 1):
+                        agent2 = 0
+                    else:
+                        agent2 = 1
 
-                # issue a bump to agent if it reaches boundary
-                if (self.agents.index(agent) == 0 and restrict_location[1] >= (int(hig/2) + 1)) or (self.agents.index(agent) == 1 and restrict_location[1] < (int(hig/2))) or (restrict_location == self.agents[agent2].location):
-                    agent.bump = True
-                # If agents come into contact
+                    # issue a bump to agent if it reaches boundary
+                    if (self.agents.index(agent) == 0 and restrict_location[1] >= (int(hig/2) + 1)):
+                        agent.bump = True
+                    elif (self.agents.index(agent) == 1 and restrict_location[1] < (int(hig/2))):
+                        agent.bump = True
+                    elif (restrict_location == self.agents[agent2].location):
+                        agent.bump = True
+                    # If agents come into contact
+                    else:
+                        agent.bump = self.move_to(agent, restrict_location)
                 else:
-                    agent.bump = self.move_to(agent, restrict_location)
+                    agent.bump = self.move_to(agent, agent.direction.move_forward(agent.location))
 
                 if not agent.bump:
                     if(self.agents.index(agent) == 0):
@@ -179,11 +185,6 @@ class Gui(VacuumEnvironment):
                         self.buttons[yi][xi].config(bg = 'white', text='')
                         xf, yf = agent.location
                         self.buttons[yf][xf].config(bg = 'Green', text=agent_label(agent))
-
-            else:
-                agent.direction += Direction.L
-                self.buttons[yi][xi].config(text=agent_label(agent))
-
 
         if action != 'NoOp':
             agent.performance -= 1
