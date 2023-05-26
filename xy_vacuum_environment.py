@@ -106,6 +106,24 @@ class Gui(VacuumEnvironment):
                 return
 
 
+    #need to make a helper function to determine if agent is in region
+    def is_agent_in_region(self, agent):
+        lim = len(self.agents)
+        agentOK = []
+        if(self.agents[0]):
+            #Agent 1 bounds
+            x1, y1 = self.agents[0].location
+            if(1 < x1 <= wid - 1) and (1 < x1 < int(hig/2)):
+                agentOK[0] = 1
+        if(self.agents[1]):
+            #Agent 2 bounds
+            x2, y2 = self.agents[1].location
+            if(1 < x2 <= wid - 1) and (int(hig/2) < x2 < hig - 1):
+                agentOK[1] = 1
+        return agentOK
+
+
+
     def execute_action(self, agent, action):
         """Determines the action the agent performs."""
         xi, yi = agent.location
@@ -128,6 +146,7 @@ class Gui(VacuumEnvironment):
                 agent.direction += Direction.L
                 self.buttons[yi][xi].config(text=agent_label(agent))
             elif action == 'Forward':
+
                 agent.bump = self.move_to(agent, agent.direction.move_forward(agent.location))
                 if not agent.bump:
                     self.buttons[yi][xi].config(bg = 'white', text='')
@@ -137,6 +156,7 @@ class Gui(VacuumEnvironment):
         if action != 'NoOp':
             agent.performance -= 1
         performance_label.config(text=str(agent.performance))
+
     def read_env(self):
         """read_env: This sets proper wall or Dirt status based on bg color"""
         agt_loc = self.agents[0].location
@@ -199,7 +219,7 @@ class Gui(VacuumEnvironment):
         # add an agent at location 2, 1.
 
         Xstart_agent1 = random.choice(range(1, wid - 1))
-        Ystart_agent1 = random.choice(range(1, hig - 1))
+        Ystart_agent1 = random.choice(range(1, int(hig/2)))
 
         self.add_thing(theAgent, location=(Xstart_agent1, Ystart_agent1))
         self.buttons[Ystart_agent1][Xstart_agent1].config(bg = 'blue', text=agent_label(theAgent))
@@ -208,6 +228,16 @@ class Gui(VacuumEnvironment):
         """Implement this: Click call back for second Agent. It rotates among possible options"""
         if(len(self.agents) == 1):
             self.reset_env()
+            Xstart_agent2 = random.choice(range(1, wid - 1))
+            Ystart_agent2 = random.choice(range(int(hig / 2), hig - 1))
+            x2, y2 = self.agents[0].location
+
+            while (x2 == Xstart_agent2 and y2 == Ystart_agent2):
+                Xstart_agent2 = random.choice(range(1, wid - 1))
+                Ystart_agent2 = random.choice(range(int(hig / 2), hig - 1))
+
+            xyloc = Xstart_agent2, Ystart_agent2
+
             if env.agentType == 'RuleAgent':
                 agt2 = XYReflexAgent(program=XYRuleBasedAgentProgram)
                 print("agent 2 is rule based")
@@ -391,7 +421,7 @@ if __name__ == "__main__":
     agt = XYReflexAgent(program=XYReflexAgentProgram)
 
     Xstart_agent1 = random.choice(range(1, wid - 1))
-    Ystart_agent1 = random.choice(range(1, hig - 1))
+    Ystart_agent1 = random.choice(range(1, int(hig/2)))
     Xstart_agent2 = Xstart_agent1
     Ystart_agent2 = Ystart_agent1
 
@@ -399,7 +429,7 @@ if __name__ == "__main__":
     print(str(Xstart_agent1) + " " + str(Ystart_agent1))
     while Xstart_agent2 == Xstart_agent1 and Ystart_agent2 == Ystart_agent1:
         Xstart_agent2 = random.choice(range(1, wid - 1))
-        Ystart_agent2 = random.choice(range(1, hig - 1))
+        Ystart_agent2 = random.choice(range(int(hig/2), hig - 1))
     print(str(Xstart_agent2) + " " + str(Ystart_agent2))
 
     env.add_agent(agt, (Xstart_agent1, Ystart_agent1))
