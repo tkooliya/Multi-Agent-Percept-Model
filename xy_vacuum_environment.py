@@ -245,7 +245,7 @@ class Gui(VacuumEnvironment):
 
         print(", new agentType = ", env.agentType)
         agentType_button.config(text=env.agentType)
-        secondAgent_button.config(text=env.agentTypes[2])
+
 
         self.reset_env()
 
@@ -276,6 +276,7 @@ class Gui(VacuumEnvironment):
 
         self.add_thing(theAgent, location=(Xstart_agent1, Ystart_agent1))
         self.buttons[Ystart_agent1][Xstart_agent1].config(bg = 'blue', text=agent_label(theAgent))
+        secondAgent_button.config(text=env.agentTypes[2])
 
     def second_agent(self):
         """Implement this: Click call back for second Agent. It rotates among possible options"""
