@@ -97,12 +97,16 @@ class Gui(VacuumEnvironment):
 
 
     # need to have this shit run until its not dirty anymore
-    def runAgent(self, steps=1000 - 1):
+    def runAgent(self, steps=1000):
         """Run the Environment for given number of time steps."""
         self.update_env()
         for step in range(steps):
+            if not any(isinstance(x ,Dirt) for x in self.things):
+                print("It takes", step, "steps to clean all dirt. This was done under a ", env.agentType, "agent." )
+                return
             self.update_env()
             if self.is_done():
+                print("The dirt was not completely cleanable.")
                 return
 
 
@@ -140,9 +144,20 @@ class Gui(VacuumEnvironment):
             dirt_list = self.list_things_at(agent.location, Dirt)
             if dirt_list:
                 dirt = dirt_list[0]
-                agent.performance += 100
+
+                #performance standard will be 1000~!
+                agent.performance += 1000
                 self.delete_thing(dirt)
                 self.buttons[yi][xi].config(bg='white')
+
+                if(agent == self.agents[0]):
+                    self.buttons[yi][xi].config(bg='white', text='')
+                    xf, yf = agent.location
+                    self.buttons[yf][xf].config(bg='blue', text=agent_label(agent))
+                elif(agent == self.agents[1]):
+                    self.buttons[yi][xi].config(bg='white', text='')
+                    xf, yf = agent.location
+                    self.buttons[yf][xf].config(bg='Green', text=agent_label(agent))
 
         else:
             agent.bump = False
@@ -162,18 +177,22 @@ class Gui(VacuumEnvironment):
                     else:
                         agent2 = 1
 
-                    # issue a bump to agent if it reaches boundary
+                    # issue a bump to agent if it reaches proximity boundary
                     if (self.agents.index(agent) == 0 and restrict_location[1] >= (int(hig/2) + 1)):
                         agent.bump = True
                     elif (self.agents.index(agent) == 1 and restrict_location[1] < (int(hig/2))):
                         agent.bump = True
                     elif (restrict_location == self.agents[agent2].location):
                         agent.bump = True
+
                     # If agents come into contact
                     else:
                         agent.bump = self.move_to(agent, restrict_location)
                 else:
                     agent.bump = self.move_to(agent, agent.direction.move_forward(agent.location))
+                    self.buttons[yi][xi].config(bg='white', text='')
+                    xf, yf = agent.location
+                    self.buttons[yf][xf].config(bg='blue', text=agent_label(agent))
 
                 if not agent.bump:
                     if(self.agents.index(agent) == 0):
