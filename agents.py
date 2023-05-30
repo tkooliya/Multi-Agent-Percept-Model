@@ -759,6 +759,8 @@ class VacuumEnvironment(XYEnvironment):
         dirty[2] = self.some_things_at((x + 1, y), Dirt) #right
         dirty[3] = self.some_things_at((x, y - 1), Dirt) #backwards
 
+
+
         return status, bump, dirty, direction
 
     def execute_action(self, agent, action):

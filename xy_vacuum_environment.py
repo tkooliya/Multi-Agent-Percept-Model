@@ -329,6 +329,32 @@ def XYRuleBasedAgentProgram(percept):
     if bump == 'Bump':
         value = random.choice((1, 2))
 
+    # ACCOUNTS FOR DIRT BEYOND PERCEPTIBLE RANGE OF BOTTOM OF BOARD
+    x, y = percept.agent.location
+    agtSide = "topside"
+    # check to see if the agent is the first agent (should be restricted to the bottom)
+    if (env.agents[0].location == (x, y)):
+        agtSide = "botside"
+
+    if (len(env.height) % 2 == 0):
+
+        if agtSide == "topside" and y == (int(len(env.buttons)/2)):
+            # pretend the bottom tile is not dirty regardless of its actual state
+            dirty[3] = 0
+
+        elif (agtSide == "botside" and y == (int(len(env.buttons)/2)) - 1):
+            # pretend the top tile is not dirty regardless of its actual state
+            dirty[0] = 0
+    else:
+
+        if agtSide == "topside" and y == (int(len(env.buttons)/2)):
+            # pretend the bottom tile is not dirty regardless of its actual state
+            dirty[3] = 0
+
+        elif (agtSide == "botside" and y == int(len(env.buttons)/2)):
+            # pretend the top tile is not dirty regardless of its actual state
+            dirty[3] = 0
+
 
     if directionFace == 'up':
         print("UPPPIES")
