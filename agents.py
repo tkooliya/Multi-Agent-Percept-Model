@@ -67,9 +67,9 @@ class Thing:
 
 
 class Agent(Thing):
-    """An Agent is a subclass of Thing with one required instance attribute 
+    """An Agent is a subclass of Thing with one required instance attribute
     (aka slot), .program, which should hold a function that takes one argument,
-    the percept, and returns an action. (What counts as a percept or action 
+    the percept, and returns an action. (What counts as a percept or action
     will depend on the specific environment in which the agent exists.)
     Note that 'program' is a slot, not a method. If it were a method, then the
     program could 'cheat' and look at aspects of the agent. It's not supposed
@@ -458,9 +458,9 @@ class Direction:
         elif self.direction == self.L:
             return iclass((x - 1, y))
         elif self.direction == self.U:
-            return iclass((x, y - 1))
-        elif self.direction == self.D:
             return iclass((x, y + 1))
+        elif self.direction == self.D:
+            return iclass((x, y - 1))
 
 
 class XYEnvironment(Environment):
@@ -496,6 +496,7 @@ class XYEnvironment(Environment):
 
     def percept(self, agent):
         """By default, agent perceives things within a default radius."""
+
         return self.things_near(agent.location)
 
     def execute_action(self, agent, action):
@@ -508,7 +509,7 @@ class XYEnvironment(Environment):
             agent.bump = self.move_to(agent, agent.direction.move_forward(agent.location))
         elif action == 'Grab':
             things = [thing for thing in self.list_things_at(agent.location) if agent.can_grab(thing)]
-            if things:    
+            if things:
                 agent.holding.append(things[0])
                 print("Grabbing ", things[0].__class__.__name__)
                 self.delete_thing(things[0])
@@ -736,6 +737,7 @@ class VacuumEnvironment(XYEnvironment):
 
     def __init__(self, width=10, height=10):
         super().__init__(width, height)
+
         self.add_walls()
 
     def thing_classes(self):
@@ -747,7 +749,19 @@ class VacuumEnvironment(XYEnvironment):
         Unlike the TrivialVacuumEnvironment, location is NOT perceived."""
         status = ('Dirty' if self.some_things_at(agent.location, Dirt) else 'Clean')
         bump = ('Bump' if agent.bump else 'None')
-        return status, bump
+        dirty = [0, 0, 0, 0]
+        x, y = agent.location
+        direction = agent.direction.direction
+
+        #UP
+        dirty[0] = self.some_things_at((x, y + 1), Dirt) #forward
+        dirty[1] = self.some_things_at((x - 1, y), Dirt) #left
+        dirty[2] = self.some_things_at((x + 1, y), Dirt) #right
+        dirty[3] = self.some_things_at((x, y - 1), Dirt) #backwards
+
+
+
+        return status, bump, dirty, direction
 
     def execute_action(self, agent, action):
         agent.bump = False
@@ -959,7 +973,7 @@ class WumpusEnvironment(XYEnvironment):
 
         if isinstance(agent, Explorer) and self.in_danger(agent):
             return
-            
+
         agent.bump = False
         if action in ['TurnRight', 'TurnLeft', 'Forward', 'Grab']:
             super().execute_action(agent, action)
